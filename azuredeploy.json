@@ -38,16 +38,16 @@
         "type": "int",
         "defaultValue": "[length(parameters('subscriptionsList'))]"
       },
-      "datadogApplicationKey": {
+      "dynatraceApplicationKey": {
         "type": "secureString",
         "metadata": {
-          "description": "Your Datadog Application key"
+          "description": "Your Dynatrace Application key"
         }
       },
-      "datadogApiKey": {
+      "dynatraceApiKey": {
         "type": "secureString",
         "metadata": {
-          "description": "Your Datadog API key"
+          "description": "Your Dynatrace API key"
         }
       },
       "hostFilters": {
@@ -82,7 +82,7 @@
         "type": "bool",
         "defaultValue": true,
         "metadata": {
-          "description": "Collect resources for various Datadog products"
+          "description": "Collect resources for various Dynatrace products"
         }
       },
       "cspm_enabled": {
@@ -99,11 +99,11 @@
           "description": "Whether or not to use custom metrics"
         }
       },
-      "datadogSite": {
+      "dynatraceSite": {
         "type": "String",
-        "defaultValue": "datadoghq.com",
+        "defaultValue": "dynatracehq.com",
         "metadata": {
-          "description": "The datadog site, e.g. eu1.datadoghq.com"
+          "description": "The dynatrace site, e.g. eu1.dynatracehq.com"
         }
       },
       "newguid": {
@@ -168,7 +168,7 @@
       {
         "type": "Microsoft.Resources/deploymentScripts",
         "apiVersion": "2020-10-01",
-        "name": "[concat('datadog-integration-script-', parameters('newguid'))]",
+        "name": "[concat('dynatrace-integration-script-', parameters('newguid'))]",
         "location": "[parameters('location')]",
         "kind": "AzurePowerShell",
         "properties": {
@@ -190,12 +190,12 @@
               "secureValue": "[parameters('servicePrincipalClientSecret')]"
             },
             {
-              "name": "datadogApplicationKey",
-              "secureValue": "[parameters('datadogApplicationKey')]"
+              "name": "dynatraceApplicationKey",
+              "secureValue": "[parameters('dynatraceApplicationKey')]"
             },
             {
-              "name": "datadogApiKey",
-              "secureValue": "[parameters('datadogApiKey')]"
+              "name": "dynatraceApiKey",
+              "secureValue": "[parameters('dynatraceApiKey')]"
             },
             {
               "name": "automute",
@@ -214,8 +214,8 @@
               "value": "[parameters('custom_metrics_enabled')]"
             },
             {
-              "name": "datadogSite",
-              "value": "[parameters('datadogSite')]"
+              "name": "dynatraceSite",
+              "value": "[parameters('dynatraceSite')]"
             },
             {
               "name": "tenantName",
@@ -231,32 +231,32 @@
           "containerSettings": {},
           "cleanupPreference": "Always",
           "azPowerShellVersion": "8.1",
-          "scriptContent": "Invoke-WebRequest -SkipCertificateCheck -ContentType \"application/json\" -Method Post -Uri \"https://api.$Env:datadogSite/api/v1/integration/azure\" -Headers @{\"Accept\"=\"application/json\"; \"DD-APPLICATION-KEY\"=$Env:datadogApplicationKey; \"DD-API-KEY\"=$Env:datadogApiKey} -Body (@{\"automute\"=[bool]::Parse($Env:automute); \"resource_collection_enabled\"=[bool]::Parse($Env:resource_collection_enabled); \"cspm_enabled\"=[bool]::Parse($Env:cspm_enabled); \"custom_metrics_enabled\"=[bool]::Parse($Env:custom_metrics_enabled); \"client_id\"=$Env:clientId; \"client_secret\"=$Env:clientSecret; \"tenant_name\"=$Env:tenantName; \"source\"=$Env:source; \"subscription_count\"=[int]::Parse($Env:subscription_count)} | ConvertTo-Json )"
+          "scriptContent": "Invoke-WebRequest -SkipCertificateCheck -ContentType \"application/json\" -Method Post -Uri \"https://api.$Env:dynatraceSite/api/v1/integration/azure\" -Headers @{\"Accept\"=\"application/json\"; \"DD-APPLICATION-KEY\"=$Env:dynatraceApplicationKey; \"DD-API-KEY\"=$Env:dynatraceApiKey} -Body (@{\"automute\"=[bool]::Parse($Env:automute); \"resource_collection_enabled\"=[bool]::Parse($Env:resource_collection_enabled); \"cspm_enabled\"=[bool]::Parse($Env:cspm_enabled); \"custom_metrics_enabled\"=[bool]::Parse($Env:custom_metrics_enabled); \"client_id\"=$Env:clientId; \"client_secret\"=$Env:clientSecret; \"tenant_name\"=$Env:tenantName; \"source\"=$Env:source; \"subscription_count\"=[int]::Parse($Env:subscription_count)} | ConvertTo-Json )"
         }
       },
       {
         "condition": "[not(empty(parameters('hostFilters')))]",
         "type": "Microsoft.Resources/deploymentScripts",
         "apiVersion": "2020-10-01",
-        "name": "[concat('datadog-host-filter-script-', parameters('newguid'))]",
+        "name": "[concat('dynatrace-host-filter-script-', parameters('newguid'))]",
         "location": "[parameters('location')]",
         "kind": "AzurePowerShell",
         "dependsOn": [
-          "[resourceId('Microsoft.Resources/deploymentScripts', concat('datadog-integration-script-', parameters('newguid')))]"
+          "[resourceId('Microsoft.Resources/deploymentScripts', concat('dynatrace-integration-script-', parameters('newguid')))]"
         ],
         "properties": {
           "environmentVariables": [
             {
-              "name": "datadogApplicationKey",
-              "secureValue": "[parameters('datadogApplicationKey')]"
+              "name": "dynatraceApplicationKey",
+              "secureValue": "[parameters('dynatraceApplicationKey')]"
             },
             {
-              "name": "datadogApiKey",
-              "secureValue": "[parameters('datadogApiKey')]"
+              "name": "dynatraceApiKey",
+              "secureValue": "[parameters('dynatraceApiKey')]"
             },
             {
-              "name": "datadogSite",
-              "value": "[parameters('datadogSite')]"
+              "name": "dynatraceSite",
+              "value": "[parameters('dynatraceSite')]"
             },
             {
               "name": "hostFilters",
@@ -280,32 +280,32 @@
           "containerSettings": {},
           "cleanupPreference": "Always",
           "azPowerShellVersion": "8.1",
-          "scriptContent": "Invoke-WebRequest -SkipCertificateCheck -ContentType \"application/json\" -Method Post -Uri \"https://api.$Env:datadogSite/api/v1/integration/azure/filtering\" -Headers @{\"Accept\"=\"application/json\"; \"DD-APPLICATION-KEY\"=$Env:datadogApplicationKey; \"DD-API-KEY\"=$Env:datadogApiKey} -Body (@{\"client_id\"=$Env:clientId; \"tenant_id\"=$Env:tenantName; \"namespace\"=$Env:namespace; \"filters\"=$Env:hostFilters} | ConvertTo-Json )"
+          "scriptContent": "Invoke-WebRequest -SkipCertificateCheck -ContentType \"application/json\" -Method Post -Uri \"https://api.$Env:dynatraceSite/api/v1/integration/azure/filtering\" -Headers @{\"Accept\"=\"application/json\"; \"DD-APPLICATION-KEY\"=$Env:dynatraceApplicationKey; \"DD-API-KEY\"=$Env:dynatraceApiKey} -Body (@{\"client_id\"=$Env:clientId; \"tenant_id\"=$Env:tenantName; \"namespace\"=$Env:namespace; \"filters\"=$Env:hostFilters} | ConvertTo-Json )"
         }
       },
       {
         "condition": "[not(empty(parameters('appServicePlanFilters')))]",
         "type": "Microsoft.Resources/deploymentScripts",
         "apiVersion": "2020-10-01",
-        "name": "[concat('datadog-app-service-plan-filter-script-', parameters('newguid'))]",
+        "name": "[concat('dynatrace-app-service-plan-filter-script-', parameters('newguid'))]",
         "location": "[parameters('location')]",
         "kind": "AzurePowerShell",
         "dependsOn": [
-          "[resourceId('Microsoft.Resources/deploymentScripts', concat('datadog-integration-script-', parameters('newguid')))]"
+          "[resourceId('Microsoft.Resources/deploymentScripts', concat('dynatrace-integration-script-', parameters('newguid')))]"
         ],
         "properties": {
           "environmentVariables": [
             {
-              "name": "datadogApplicationKey",
-              "secureValue": "[parameters('datadogApplicationKey')]"
+              "name": "dynatraceApplicationKey",
+              "secureValue": "[parameters('dynatraceApplicationKey')]"
             },
             {
-              "name": "datadogApiKey",
-              "secureValue": "[parameters('datadogApiKey')]"
+              "name": "dynatraceApiKey",
+              "secureValue": "[parameters('dynatraceApiKey')]"
             },
             {
-              "name": "datadogSite",
-              "value": "[parameters('datadogSite')]"
+              "name": "dynatraceSite",
+              "value": "[parameters('dynatraceSite')]"
             },
             {
               "name": "appServicePlanFilters",
@@ -329,32 +329,32 @@
           "containerSettings": {},
           "cleanupPreference": "Always",
           "azPowerShellVersion": "8.1",
-          "scriptContent": "Invoke-WebRequest -SkipCertificateCheck -ContentType \"application/json\" -Method Post -Uri \"https://api.$Env:datadogSite/api/v1/integration/azure/filtering\" -Headers @{\"Accept\"=\"application/json\"; \"DD-APPLICATION-KEY\"=$Env:datadogApplicationKey; \"DD-API-KEY\"=$Env:datadogApiKey} -Body (@{\"client_id\"=$Env:clientId; \"tenant_id\"=$Env:tenantName; \"namespace\"=$Env:namespace; \"filters\"=$Env:appServicePlanFilters} | ConvertTo-Json )"
+          "scriptContent": "Invoke-WebRequest -SkipCertificateCheck -ContentType \"application/json\" -Method Post -Uri \"https://api.$Env:dynatraceSite/api/v1/integration/azure/filtering\" -Headers @{\"Accept\"=\"application/json\"; \"DD-APPLICATION-KEY\"=$Env:dynatraceApplicationKey; \"DD-API-KEY\"=$Env:dynatraceApiKey} -Body (@{\"client_id\"=$Env:clientId; \"tenant_id\"=$Env:tenantName; \"namespace\"=$Env:namespace; \"filters\"=$Env:appServicePlanFilters} | ConvertTo-Json )"
         }
       },
       {
         "condition": "[not(empty(parameters('containerAppFilters')))]",
         "type": "Microsoft.Resources/deploymentScripts",
         "apiVersion": "2020-10-01",
-        "name": "[concat('datadog-container-app-filter-script-', parameters('newguid'))]",
+        "name": "[concat('dynatrace-container-app-filter-script-', parameters('newguid'))]",
         "location": "[parameters('location')]",
         "kind": "AzurePowerShell",
         "dependsOn": [
-          "[resourceId('Microsoft.Resources/deploymentScripts', concat('datadog-integration-script-', parameters('newguid')))]"
+          "[resourceId('Microsoft.Resources/deploymentScripts', concat('dynatrace-integration-script-', parameters('newguid')))]"
         ],
         "properties": {
           "environmentVariables": [
             {
-              "name": "datadogApplicationKey",
-              "secureValue": "[parameters('datadogApplicationKey')]"
+              "name": "dynatraceApplicationKey",
+              "secureValue": "[parameters('dynatraceApplicationKey')]"
             },
             {
-              "name": "datadogApiKey",
-              "secureValue": "[parameters('datadogApiKey')]"
+              "name": "dynatraceApiKey",
+              "secureValue": "[parameters('dynatraceApiKey')]"
             },
             {
-              "name": "datadogSite",
-              "value": "[parameters('datadogSite')]"
+              "name": "dynatraceSite",
+              "value": "[parameters('dynatraceSite')]"
             },
             {
               "name": "containerAppFilters",
@@ -378,7 +378,7 @@
           "containerSettings": {},
           "cleanupPreference": "Always",
           "azPowerShellVersion": "8.1",
-          "scriptContent": "Invoke-WebRequest -SkipCertificateCheck -ContentType \"application/json\" -Method Post -Uri \"https://api.$Env:datadogSite/api/v1/integration/azure/filtering\" -Headers @{\"Accept\"=\"application/json\"; \"DD-APPLICATION-KEY\"=$Env:datadogApplicationKey; \"DD-API-KEY\"=$Env:datadogApiKey} -Body (@{\"client_id\"=$Env:clientId; \"tenant_id\"=$Env:tenantName; \"namespace\"=$Env:namespace; \"filters\"=$Env:containerAppFilters} | ConvertTo-Json )"
+          "scriptContent": "Invoke-WebRequest -SkipCertificateCheck -ContentType \"application/json\" -Method Post -Uri \"https://api.$Env:dynatraceSite/api/v1/integration/azure/filtering\" -Headers @{\"Accept\"=\"application/json\"; \"DD-APPLICATION-KEY\"=$Env:dynatraceApplicationKey; \"DD-API-KEY\"=$Env:dynatraceApiKey} -Body (@{\"client_id\"=$Env:clientId; \"tenant_id\"=$Env:tenantName; \"namespace\"=$Env:namespace; \"filters\"=$Env:containerAppFilters} | ConvertTo-Json )"
         }
       }
     ],
